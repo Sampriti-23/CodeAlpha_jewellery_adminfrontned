@@ -1,0 +1,74 @@
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: #f8f8f8;
+  padding: 20px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  font-family: "Poppins", sans-serif;
+}
+
+/* Logo */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color:  #8b1e3f;
+  margin-bottom: 30px;
+}
+
+/* Menu */
+.menu {
+  list-style: none;
+  padding: 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #555;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.menu-item svg {
+  margin-right: 10px;
+}
+
+.menu-item:hover {
+  background: #eee;
+}
+
+/* Active (Dashboard look like image) */
+.menu-item.active {
+  background: black;
+  color: white;
+}
+
+/* Submenu */
+.submenu {
+  list-style: none;
+  padding-left: 35px;
+  margin-bottom: 10px;
+}
+
+.submenu li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: #777;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submenu li:hover {
+  color: black;
+}
+
+/* Logout */
+.logout {
+  margin-top: 20px;
+  color: #d94c4c;
+}

@@ -1,0 +1,82 @@
+.dashboard {
+  flex: 1;
+  padding: 20px;
+  background: #f5f5f5;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card h4 {
+  color: #777;
+  font-size: 14px;
+}
+
+.card h2 {
+  margin-top: 10px;
+  font-size: 22px;
+}
+
+/* Bottom Layout */
+.bottom {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* Graph */
+.graph {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  height: 200px;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.bar {
+  width: 20px;
+  background: linear-gradient(to top, #facc15, #fde68a);
+  border-radius: 6px;
+}
+
+/* Insights */
+.insights {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.insight-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.top-customers {
+  margin-top: 20px;
+}
+
+.customer {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}

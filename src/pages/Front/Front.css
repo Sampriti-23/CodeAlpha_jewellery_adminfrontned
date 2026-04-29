@@ -1,0 +1,97 @@
+.login-container {
+  display: flex;
+  height: 97vh;
+  font-family: "Poppins", sans-serif;
+}
+
+/* LEFT SIDE */
+.login-left {
+  width: 50%;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 40px;
+  color: #8b1e3f;
+}
+
+.login-left h2 {
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #777;
+  margin-bottom: 20px;
+}
+
+/* FORM */
+.form {
+  max-width: 350px;
+}
+
+.form label {
+  font-size: 13px;
+  color: #666;
+}
+
+.form input {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+.form input:focus {
+  border-color: #4f6f52;
+}
+
+/* ERROR */
+.error {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 12px;
+  background:  #a81a4c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #5f1e35;
+}
+
+/* FOOTER */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 40px;
+  color: #999;
+}
+
+/* RIGHT SIDE */
+.login-right {
+  width: 50%;
+  background: url("https://images.unsplash.com/photo-1717282924908-1c0262e4b136");
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
