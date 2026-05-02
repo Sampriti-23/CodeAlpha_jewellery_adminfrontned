@@ -9,7 +9,9 @@ const Dashboard = () => {
       <Sidebar/>
       {/* Main Content Area (Covers the rest of the page) */}
       <div className="main-content">
-        
+        <div className="page-header">
+          <h2>Dashboard</h2>
+        </div>
         {/* Top Cards */}
         <div className="cards">
           <div className="card">

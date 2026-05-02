@@ -1,6 +1,6 @@
 .sidebar {
   width: 220px;
-  min-height: 100vh; /* Ensures sidebar takes full screen height */
+  min-height: 94vh; /* Ensures sidebar takes full screen height */
   background: #f8f8f8;
   padding: 20px;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
@@ -50,7 +50,7 @@
 
 /* 🔥 ACTIVE LINK (React Router automatically applies this class to NavLinks) */
 .menu-item.active {
-  background: black;
+  background: #771437;
   color: white;
 }
 

@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./Product.css";
 import Sidebar from "../../layout/Sidebar";
-import { FaSearch, FaPlus, FaEllipsisH } from "react-icons/fa";
+import { FaSearch, FaPlus, FaEllipsisH, FaTrash } from "react-icons/fa";
 
 const Products = () => {
-  // Initial dummy data just in case local storage is empty
-  const initialData = [
-    { id: "#P1001", name: "Gold Plated Ring", type: "Ring", price: 1200, status: "Ordered" },
-    { id: "#P1002", name: "Silver Necklace", type: "Necklace", price: 2500, status: "Confirmed" },
-    { id: "#P1003", name: "Diamond Earrings", type: "Earrings", price: 8900, status: "Delivered" },
-  ];
+  // Initial dummy data (now using quantity instead of status)
 
-  // Load data from LocalStorage on first render, or use initialData
+  // Load data from LocalStorage
   const [products, setProducts] = useState(() => {
     const saved = localStorage.getItem("trinkets_products");
     return saved ? JSON.parse(saved) : initialData;
@@ -19,15 +14,15 @@ const Products = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeMenuId, setActiveMenuId] = useState(null); // Tracks which 3-dot menu is open
+  const [activeMenuId, setActiveMenuId] = useState(null); // Tracks open 3-dot menu
 
-  // Form State
+  // Form State (Updated for quantity)
   const [formData, setFormData] = useState({
     id: "",
     name: "",
     type: "",
     price: "",
-    status: "Ordered",
+    quantity: "",
   });
 
   // Save to LocalStorage whenever products array changes
@@ -46,23 +41,21 @@ const Products = () => {
     e.preventDefault();
     const newProduct = {
       ...formData,
-      // Ensure ID has a # prefix for styling consistency
       id: formData.id.startsWith("#") ? formData.id : `#${formData.id}`,
       price: Number(formData.price),
+      quantity: Number(formData.quantity),
     };
     
     setProducts([newProduct, ...products]);
-    setIsModalOpen(false); // Close Modal
-    setFormData({ id: "", name: "", type: "", price: "", status: "Ordered" }); // Reset Form
+    setIsModalOpen(false); 
+    setFormData({ id: "", name: "", type: "", price: "", quantity: "" }); 
   };
 
-  // Change Status Logic
-  const handleStatusChange = (productId, newStatus) => {
-    const updatedProducts = products.map((p) =>
-      p.id === productId ? { ...p, status: newStatus } : p
-    );
+  // Delete Product
+  const handleDeleteProduct = (productId) => {
+    const updatedProducts = products.filter(p => p.id !== productId);
     setProducts(updatedProducts);
-    setActiveMenuId(null); // Close menu after selection
+    setActiveMenuId(null); // Close menu
   };
 
   // Filter products based on search
@@ -74,7 +67,7 @@ const Products = () => {
 
   return (
     <div className="products-page">
-      {/* Sidebar Layout */}
+      {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content Area */}
@@ -111,7 +104,7 @@ const Products = () => {
                 <th>Product Name</th>
                 <th>Type</th>
                 <th>Price</th>
-                <th>Status</th>
+                <th>Quantity</th>
                 <th className="action-col"></th>
               </tr>
             </thead>
@@ -123,11 +116,14 @@ const Products = () => {
                     <td>{product.name}</td>
                     <td>{product.type}</td>
                     <td className="bold-text">₹{product.price}</td>
+                    
+                    {/* Quantity Cell */}
                     <td>
-                      <span className={`status-badge ${product.status.toLowerCase()}`}>
-                        {product.status}
+                      <span className={`qty-indicator ${product.quantity < 10 ? 'low-stock' : ''}`}>
+                         {product.quantity} units
                       </span>
                     </td>
+
                     <td className="action-col relative">
                       {/* 3 Dots Button */}
                       <button 
@@ -140,10 +136,9 @@ const Products = () => {
                       {/* Dropdown Menu */}
                       {activeMenuId === product.id && (
                         <div className="dropdown-menu">
-                          <p onClick={() => handleStatusChange(product.id, "Ordered")}>Mark as Ordered</p>
-                          <p onClick={() => handleStatusChange(product.id, "Confirmed")}>Mark as Confirmed</p>
-                          <p onClick={() => handleStatusChange(product.id, "Delivered")}>Mark as Delivered</p>
-                           <p onClick={() => handleStatusChange(product.id, "Cancelled")}>Mark as Cancelled</p>
+                          <p onClick={() => handleDeleteProduct(product.id)} className="delete-text">
+                            <FaTrash style={{marginRight: "8px"}}/> Delete Product
+                          </p>
                         </div>
                       )}
                     </td>
@@ -159,7 +154,7 @@ const Products = () => {
         </div>
       </div>
 
-      {/* Add Product Modal (Popup) */}
+      {/* Add Product Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal">
@@ -181,14 +176,11 @@ const Products = () => {
                 <label>Price (₹)</label>
                 <input type="number" name="price" required placeholder="e.g. 1500" value={formData.price} onChange={handleInputChange} />
               </div>
+              
+              {/* Quantity Input Field */}
               <div className="form-group">
-                <label>Status</label>
-                <select name="status" value={formData.status} onChange={handleInputChange}>
-                  <option value="Ordered">Ordered</option>
-                  <option value="Confirmed">Confirmed</option>
-                  <option value="Delivered">Delivered</option>
-                  <option value="Cancelled">Cancelled</option>
-                </select>
+                <label>Quantity in Stock</label>
+                <input type="number" name="quantity" required placeholder="e.g. 50" value={formData.quantity} onChange={handleInputChange} />
               </div>
               
               <div className="modal-actions">
