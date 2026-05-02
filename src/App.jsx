@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Front from "./pages/Front/Front";
+import Products from "./pages/Product/Product";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Routes>
          <Route path="/" element={<Front />} />
          <Route path="/home" element={<Dashboard />} />
+         <Route path="/products" element={<Products />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Sidebar.css";
 import { FaTachometerAlt, FaBox, FaShoppingCart, FaUsers, FaSignOutAlt } from "react-icons/fa";
-import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
-  const [orderOpen, setOrderOpen] = useState(false);
-  const [productOpen, setProductOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // 🔐 LOGOUT FUNCTION
+  const handleLogout = () => {
+    localStorage.removeItem("isAdmin"); 
+    localStorage.removeItem("token");  
+    navigate("/");    
+  };
 
   return (
     <div className="sidebar">
@@ -13,48 +19,28 @@ const Sidebar = () => {
       <div className="logo">Trinkets</div>
 
       {/* Menu */}
-      <ul className="menu">
-        <li className="menu-item active">
+      <nav className="menu">
+        <NavLink to="/home" className="menu-item">
           <FaTachometerAlt /> Dashboard
-        </li>
+        </NavLink>
 
-        {/* Orders */}
-        <li className="menu-item" onClick={() => setOrderOpen(!orderOpen)}>
+        <NavLink to="/orders" className="menu-item">
           <FaShoppingCart /> Orders
-          {orderOpen ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
-        </li>
+        </NavLink>
 
-        {orderOpen && (
-          <ul className="submenu">
-            <li>New Orders</li>
-            <li>Confirmed Orders</li>
-            <li>Delivered</li>
-          </ul>
-        )}
-
-        {/* Products */}
-        <li className="menu-item" onClick={() => setProductOpen(!productOpen)}>
+        <NavLink to="/products" className="menu-item">
           <FaBox /> Products
-          {productOpen ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
-        </li>
+        </NavLink>
 
-        {productOpen && (
-          <ul className="submenu">
-            <li>Earning</li>
-            <li>Necklace</li>
-            <li>Rings</li>
-            <li>Pendant</li>
-          </ul>
-        )}
-
-        <li className="menu-item">
+        <NavLink to="/clients" className="menu-item">
           <FaUsers /> Clients
-        </li>
+        </NavLink>
+      </nav>
 
-        <li className="menu-item logout">
-          <FaSignOutAlt /> Logout
-        </li>
-      </ul>
+      {/* Logout (Pushed to the bottom via CSS) */}
+      <div className="menu-item logout" onClick={handleLogout}>
+        <FaSignOutAlt /> Logout
+      </div>
     </div>
   );
 };
