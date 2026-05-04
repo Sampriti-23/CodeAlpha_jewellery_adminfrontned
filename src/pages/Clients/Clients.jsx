@@ -3,18 +3,18 @@ import "./Clients.css";
 import Sidebar from "../../layout/Sidebar";
 import { FaSearch } from "react-icons/fa";
 
-// 🔥 UPDATE THESE TO MATCH YOUR ACTUAL BACKEND ROUTES
+// 🔥 EXACT URLS MATCHING YOUR BACKEND ROUTES
 const GET_ALL_USERS_URL = "http://localhost:8000/api/user/getalluser"; 
-const GET_ALL_DETAILS_URL = "http://localhost:8000/api/details/admin/alldetails"; // Use the admin route!
+const GET_ALL_ORDERS_URL = "http://localhost:8000/api/order/getallorder"; // We now get addresses from orders!
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState(null);
 
-  // 1. FETCH USERS AND DETAILS FROM DATABASE
- // 1. FETCH USERS AND DETAILS FROM DATABASE
+  // 1. FETCH USERS AND ORDERS FROM DATABASE
   useEffect(() => {
-    const fetchClientsAndDetails = async () => {
+    const fetchClientsAndOrders = async () => {
       try {
         const token = localStorage.getItem("token"); 
         
@@ -22,60 +22,61 @@ const Clients = () => {
         const headers = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
-        // --- STEP A: FETCH USERS (CRITICAL) ---
-        console.log("1. Fetching users...");
-        const usersRes = await fetch(GET_ALL_USERS_URL, { headers });
+        // Fetch Users and Orders at the same time
+        const [usersRes, ordersRes] = await Promise.all([
+            fetch(GET_ALL_USERS_URL, { headers }),
+            fetch(GET_ALL_ORDERS_URL, { headers }).catch(() => null) // Catch if orders route fails
+        ]);
         
         if (!usersRes.ok) {
           throw new Error(`Failed to fetch users. Server responded with status: ${usersRes.status}`);
         }
         
         const usersJson = await usersRes.json();
-        
-        // 🔥 FIX 1: Handle both Array [...] and Object { data: [...] } responses
         const usersData = Array.isArray(usersJson) ? usersJson : (usersJson.data || []);
-        console.log("2. Users found in DB:", usersData);
+
+        let ordersData = [];
+        if (ordersRes && ordersRes.ok) {
+            const ordersJson = await ordersRes.json();
+            ordersData = Array.isArray(ordersJson) ? ordersJson : (ordersJson.data || []);
+        }
 
         // Filter out Admins (keep users where isAdmin is false or undefined)
         const normalClients = usersData.filter(user => user.isAdmin === false || user.isAdmin === undefined);
-        console.log("3. Normal clients after filtering admins:", normalClients);
 
-        // --- STEP B: FETCH DETAILS (OPTIONAL - Won't break the page if it fails) ---
-        let detailsData = [];
-        try {
-          console.log("4. Fetching details...");
-          const detailsRes = await fetch(GET_ALL_DETAILS_URL, { headers });
-          if (detailsRes.ok) {
-            const detailsJson = await detailsRes.json();
-            detailsData = Array.isArray(detailsJson) ? detailsJson : (detailsJson.data || []);
-            console.log("5. Details found:", detailsData);
-          } else {
-            console.warn("Details fetch failed (maybe route doesn't exist yet?). Continuing without them.");
-          }
-        } catch (detailErr) {
-          console.warn("Could not reach details route. Continuing without details.");
-        }
-
-        // --- STEP C: MERGE DATA ---
+        // --- MERGE DATA ---
+        // Match the user to their most recent order to get their shipping address
         const mergedClients = normalClients.map(user => {
-          const userDetails = detailsData.find(detail => detail.user === user._id);
+          // find() gets the first match. Since your getallorder route sorts by newest first, 
+          // this automatically grabs their most recent shipping address!
+          const userLatestOrder = ordersData.find(order => String(order.user) === String(user._id));
+          
+          let phone = "Not Provided";
+          let fullAddress = "Not Provided";
+
+          if (userLatestOrder && userLatestOrder.shippingAddress) {
+              phone = userLatestOrder.shippingAddress.phone || "Not Provided";
+              fullAddress = `${userLatestOrder.shippingAddress.address}, ${userLatestOrder.shippingAddress.city}`;
+          }
+
           return {
             ...user,
-            phone: userDetails ? userDetails.phone : "Not Provided",
-            fullAddress: userDetails ? `${userDetails.address}, ${userDetails.city}` : "Not Provided"
+            phone,
+            fullAddress
           };
         });
 
-        console.log("6. Final data sent to table:", mergedClients);
         setClients(mergedClients);
         
-      } catch (error) {
-        console.error("❌ CRITICAL ERROR fetching clients:", error);
+      } catch (err) {
+        console.error("❌ CRITICAL ERROR fetching clients:", err);
+        setError(err.message);
       }
     };
     
-    fetchClientsAndDetails();
+    fetchClientsAndOrders();
   }, []);
+
   // Filter clients based on search (Name, Email, or Phone)
   const filteredClients = clients.filter(
     (c) =>
@@ -103,6 +104,12 @@ const Clients = () => {
         <div className="page-header">
           <h2>Clients List</h2>
         </div>
+
+        {error && (
+          <div style={{ color: "red", padding: "10px", background: "#ffe6e6", borderRadius: "8px", marginBottom: "20px" }}>
+            Error fetching clients: {error}
+          </div>
+        )}
 
         <div className="action-bar">
           <div className="search-container">
@@ -143,12 +150,10 @@ const Clients = () => {
                     
                     <td>{client.email}</td>
                     
-                    {/* Display Phone from Details collection */}
                     <td style={{ color: client.phone === "Not Provided" ? "#aaa" : "inherit", fontStyle: client.phone === "Not Provided" ? "italic" : "normal" }}>
                       {client.phone}
                     </td>
 
-                    {/* Display Address from Details collection */}
                     <td className="address-text" style={{ color: client.fullAddress === "Not Provided" ? "#aaa" : "#666", fontStyle: client.fullAddress === "Not Provided" ? "italic" : "normal" }}>
                       {client.fullAddress}
                     </td>
