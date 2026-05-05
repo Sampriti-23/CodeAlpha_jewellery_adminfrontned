@@ -4,8 +4,9 @@ import Sidebar from "../../layout/Sidebar";
 import { FaSearch, FaEllipsisH } from "react-icons/fa";
 
 // 🔥 UPDATE THESE TO MATCH YOUR ACTUAL BACKEND ROUTES
-const GET_ALL_ORDERS_URL = "http://localhost:8000/api/order/getallorder"; 
-const UPDATE_ORDER_URL = "http://localhost:8000/api/order/updateorder"; // Used for status changes
+// 🔥 FIX: Added the missing "s" to match your backend routes perfectly!
+const GET_ALL_ORDERS_URL = "http://localhost:8000/api/orders/getallorders"; 
+const UPDATE_ORDER_URL = "http://localhost:8000/api/orders/updateorders"; // Used for status changes
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);

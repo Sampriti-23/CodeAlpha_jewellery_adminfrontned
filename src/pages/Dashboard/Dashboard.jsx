@@ -79,7 +79,7 @@ const Dashboard = () => {
           else if (status === "delivered") deliveredCount++;
 
           // Financials (Assuming delivered/processing is received, pending is due)
-          const price = Number(order.price) || 0;
+          const price = Number(order.totalPrice) || 0;
           if (status === "delivered" || status === "processing" || status === "confirmed") {
             totalReceived += price;
           } else if (status === "pending") {
