@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Product.css";
 import Sidebar from "../../layout/Sidebar";
-import { FaSearch, FaPlus, FaEllipsisH, FaTrash, FaEdit } from "react-icons/fa";
+import { FaSearch, FaPlus, FaEllipsisH, FaTrash, FaEdit, FaImage } from "react-icons/fa";
 
 // 🔥 EXACT URLS MATCHING YOUR BACKEND ROUTES
 const GET_ALL_PRODUCTS_URL = "http://localhost:8000/api/products/getallproducts"; 
@@ -23,10 +23,13 @@ const Products = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category: "", // Starts empty so the user is forced to select one
+    category: "", 
     price: "",
     countInStock: "",
   });
+
+  // 🔥 NEW: State specifically to hold the uploaded image file
+  const [imageFile, setImageFile] = useState(null);
 
   // 1. GET ALL PRODUCTS FROM DB
   const fetchProducts = async () => {
@@ -59,6 +62,7 @@ const Products = () => {
       price: product.price,
       countInStock: product.countInStock,
     });
+    setImageFile(null); // Clear the file input when opening edit mode
     setIsModalOpen(true);
     setActiveMenuId(null); 
   };
@@ -67,28 +71,34 @@ const Products = () => {
     setIsEditMode(false);
     setCurrentEditId(null);
     setFormData({ name: "", description: "", category: "", price: "", countInStock: "" });
+    setImageFile(null); // Clear the file input for new products
     setIsModalOpen(true);
   };
 
-  // 2. ADD OR UPDATE PRODUCT IN DB
+  // 2. ADD OR UPDATE PRODUCT IN DB (🔥 UPDATED FOR MULTER)
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     
-    const productData = {
-      name: formData.name,
-      description: formData.description,
-      category: formData.category,
-      price: Number(formData.price),
-      countInStock: Number(formData.countInStock),
-    };
+    // 🔥 We MUST use FormData instead of JSON to send files!
+    const submitData = new FormData();
+    submitData.append("name", formData.name);
+    submitData.append("description", formData.description);
+    submitData.append("category", formData.category);
+    submitData.append("price", Number(formData.price));
+    submitData.append("countInStock", Number(formData.countInStock));
+
+    // Only append the image if the user actually uploaded one
+    if (imageFile) {
+      submitData.append("image", imageFile);
+    }
 
     if (isEditMode) {
       try {
-        const response = await fetch(`${UPDATE_PRODUCT_URL}/${currentEditId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productData),
-        });
+        // ✅ CORRECT WAY (NO HEADERS AT ALL!)
+      const response = await fetch(ADD_PRODUCT_URL, {
+        method: "POST",
+        body: submitData, // Just the FormData object!
+      });
 
         if (!response.ok) throw new Error("Failed to update product");
         const updatedProduct = await response.json();
@@ -106,8 +116,8 @@ const Products = () => {
       try {
         const response = await fetch(ADD_PRODUCT_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productData),
+          // 🛑 NEVER put "Content-Type": "application/json" when sending FormData!
+          body: submitData,
         });
 
         if (!response.ok) throw new Error("Failed to create product");
@@ -119,9 +129,11 @@ const Products = () => {
       }
     }
 
+    // Reset everything after closing
     setIsModalOpen(false); 
     setIsEditMode(false);
     setCurrentEditId(null);
+    setImageFile(null);
     setFormData({ name: "", description: "", category: "", price: "", countInStock: "" }); 
   };
 
@@ -178,6 +190,8 @@ const Products = () => {
           <table className="data-table">
             <thead>
               <tr>
+                {/* 🔥 Added an Image column header */}
+                <th>Image</th>
                 <th>Product ID</th>
                 <th>Product Name</th>
                 <th>Category</th>
@@ -190,6 +204,22 @@ const Products = () => {
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <tr key={product._id}>
+                    
+                    {/* 🔥 Image Cell */}
+                    <td>
+                      {product.image ? (
+                        <img 
+                          src={product.image} 
+                          alt={product.name} 
+                          style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "4px" }} 
+                        />
+                      ) : (
+                        <div style={{ width: "40px", height: "40px", background: "#eee", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px", color: "#aaa" }}>
+                          <FaImage />
+                        </div>
+                      )}
+                    </td>
+
                     <td className="bold-text">#{product._id.slice(-6).toUpperCase()}</td>
                     <td>
                       <div style={{display: "flex", flexDirection: "column"}}>
@@ -232,7 +262,7 @@ const Products = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="no-data">No products found.</td>
+                  <td colSpan="7" className="no-data">No products found.</td>
                 </tr>
               )}
             </tbody>
@@ -246,6 +276,19 @@ const Products = () => {
             <h3>{isEditMode ? "Edit Product" : "Add New Product"}</h3>
             
             <form onSubmit={handleSubmitForm}>
+              
+              {/* 🔥 NEW: Image File Upload Input */}
+              <div className="form-group" style={{ marginBottom: "15px" }}>
+                <label>Product Image</label>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={(e) => setImageFile(e.target.files[0])} 
+                  style={{ border: "1px solid #ddd", padding: "8px", width: "100%", borderRadius: "4px" }}
+                />
+                {isEditMode && <small style={{color: "#888"}}>Leave blank to keep the current image.</small>}
+              </div>
+
               <div className="form-group">
                 <label>Product Name</label>
                 <input type="text" name="name" required placeholder="e.g. Silver Ring" value={formData.name} onChange={handleInputChange} />
@@ -256,7 +299,6 @@ const Products = () => {
                 <input type="text" name="description" required placeholder="Short description..." value={formData.description} onChange={handleInputChange} />
               </div>
 
-              {/* 🔥 UPDATED CATEGORY DROPDOWN 🔥 */}
               <div className="form-group">
                 <label>Category</label>
                 <select 
