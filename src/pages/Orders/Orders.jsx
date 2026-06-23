@@ -5,8 +5,8 @@ import { FaSearch, FaEllipsisH } from "react-icons/fa";
 
 // 🔥 UPDATE THESE TO MATCH YOUR ACTUAL BACKEND ROUTES
 // 🔥 FIX: Added the missing "s" to match your backend routes perfectly!
-const GET_ALL_ORDERS_URL = "http://localhost:8000/api/orders/getallorders"; 
-const UPDATE_ORDER_URL = "http://localhost:8000/api/orders/updateorders"; // Used for status changes
+const GET_ALL_ORDERS_URL = "https://codealpha-jewellery-backend.onrender.com/api/orders/getallorders"; 
+const UPDATE_ORDER_URL = "https://codealpha-jewellery-backend.onrender.com/api/orders/updateorders"; // Used for status changes
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
