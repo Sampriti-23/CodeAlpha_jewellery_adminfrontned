@@ -77,66 +77,68 @@ const Products = () => {
 
   // 2. ADD OR UPDATE PRODUCT IN DB (🔥 UPDATED FOR MULTER)
   const handleSubmitForm = async (e) => {
-    e.preventDefault();
-    
-    // 🔥 We MUST use FormData instead of JSON to send files!
-    const submitData = new FormData();
-    submitData.append("name", formData.name);
-    submitData.append("description", formData.description);
-    submitData.append("category", formData.category);
-    submitData.append("price", Number(formData.price));
-    submitData.append("countInStock", Number(formData.countInStock));
+  e.preventDefault();
+  
+  const submitData = new FormData();
+  submitData.append("name", formData.name);
+  submitData.append("description", formData.description);
+  submitData.append("category", formData.category);
+  submitData.append("price", Number(formData.price));
+  submitData.append("countInStock", Number(formData.countInStock));
 
-    // Only append the image if the user actually uploaded one
-    if (imageFile) {
-      submitData.append("image", imageFile);
-    }
+  if (imageFile) {
+    submitData.append("image", imageFile);
+  }
 
-    if (isEditMode) {
-      try {
-        // ✅ CORRECT WAY (NO HEADERS AT ALL!)
-      const response = await fetch(ADD_PRODUCT_URL, {
-        method: "POST",
-        body: submitData, // Just the FormData object!
+  // ✅ FIXED CRITICAL CHECK: Force edit validation logic by checking if a valid ID exists!
+  const isUpdatingProduct = isEditMode && currentEditId && currentEditId !== "null" && currentEditId !== "undefined";
+
+  if (isUpdatingProduct) {
+    try {
+      console.log("Sending PUT request to ID:", currentEditId);
+      
+      const response = await fetch(`${UPDATE_PRODUCT_URL}/${currentEditId}`, {
+        method: "PUT",
+        body: submitData,
       });
 
-        if (!response.ok) throw new Error("Failed to update product");
-        const updatedProduct = await response.json();
-        
-        const updatedProductsList = products.map((p) => 
-          p._id === currentEditId ? updatedProduct : p
-        );
-        setProducts(updatedProductsList);
-        
-      } catch (error) {
-        console.error("Error updating product:", error);
-        alert("Failed to update product.");
-      }
-    } else {
-      try {
-        const response = await fetch(ADD_PRODUCT_URL, {
-          method: "POST",
-          // 🛑 NEVER put "Content-Type": "application/json" when sending FormData!
-          body: submitData,
-        });
-
-        if (!response.ok) throw new Error("Failed to create product");
-        const savedProduct = await response.json();
-        setProducts([savedProduct, ...products]);
-      } catch (error) {
-        console.error("Error adding product:", error);
-        alert("Failed to add product. Make sure your backend server is running!");
-      }
+      if (!response.ok) throw new Error("Failed to update product");
+      const updatedProduct = await response.json();
+      
+      const updatedProductsList = products.map((p) => 
+        p._id === currentEditId ? updatedProduct : p
+      );
+      setProducts(updatedProductsList);
+      
+    } catch (error) {
+      console.error("Error updating product:", error);
+      alert("Failed to update product.");
     }
+  } else {
+    try {
+      console.log("Sending POST request to create a brand new product.");
+      
+      const response = await fetch(ADD_PRODUCT_URL, {
+        method: "POST",
+        body: submitData,
+      });
 
-    // Reset everything after closing
-    setIsModalOpen(false); 
-    setIsEditMode(false);
-    setCurrentEditId(null);
-    setImageFile(null);
-    setFormData({ name: "", description: "", category: "", price: "", countInStock: "" }); 
-  };
+      if (!response.ok) throw new Error("Failed to create product");
+      const savedProduct = await response.json();
+      setProducts([savedProduct, ...products]);
+    } catch (error) {
+      console.error("Error adding product:", error);
+      alert("Failed to add product.");
+    }
+  }
 
+  // Reset states
+  setIsModalOpen(false); 
+  setIsEditMode(false);
+  setCurrentEditId(null);
+  setImageFile(null);
+  setFormData({ name: "", description: "", category: "", price: "", countInStock: "" }); 
+};
   // 3. DELETE PRODUCT
   const handleDeleteProduct = async (productId) => {
     try {
