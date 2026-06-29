@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./Clients.css";
 import Sidebar from "../../layout/Sidebar";
 import { FaSearch } from "react-icons/fa";
-
+const baseurl ="https://codealpha-jewellery-backend.onrender.com";
 // 🔥 EXACT URLS MATCHING YOUR BACKEND ROUTES
-const GET_ALL_USERS_URL = "http://localhost:8000/api/user/getalluser"; 
-const GET_ALL_ORDERS_URL = "http://localhost:8000/api/order/getallorder"; // We now get addresses from orders!
+const GET_ALL_USERS_URL = `${baseurl}/api/user/getalluser`; 
+const GET_ALL_ORDERS_URL = `${baseurl}/api/order/getallorder`; // We now get addresses from orders!
 
 const Clients = () => {
   const [clients, setClients] = useState([]);

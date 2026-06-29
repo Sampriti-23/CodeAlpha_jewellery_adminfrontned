@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
 import Sidebar from "../../layout/Sidebar";
-
+const baseurl ="https://codealpha-jewellery-backend.onrender.com";
 // 🔥 UPDATE THESE TO MATCH YOUR ACTUAL BACKEND ROUTES
-const GET_ALL_PRODUCTS_URL = "http://localhost:8000/api/products/getallproducts";
-const GET_ALL_USERS_URL = "http://localhost:8000/api/user/getalluser";
-const GET_ALL_ORDERS_URL = "http://localhost:8000/api/orders/getallorders"; // Assuming you have this route
+const GET_ALL_PRODUCTS_URL = `${baseurl}/api/products/getallproducts`;
+const GET_ALL_USERS_URL = `${baseurl}/api/user/getalluser`;
+const GET_ALL_ORDERS_URL = `${baseurl}/api/orders/getallorders`; // Assuming you have this route
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
