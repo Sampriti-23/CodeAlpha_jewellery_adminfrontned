@@ -4,10 +4,12 @@ import Sidebar from "../../layout/Sidebar";
 import { FaSearch, FaPlus, FaEllipsisH, FaTrash, FaEdit, FaImage } from "react-icons/fa";
 
 // 🔥 EXACT URLS MATCHING YOUR BACKEND ROUTES
-const GET_ALL_PRODUCTS_URL = "https://codealpha-jewellery-backend.onrender.com/api/products/getallproducts"; 
-const ADD_PRODUCT_URL = "https://codealpha-jewellery-backend.onrender.com/api/products/newproduct"; 
-const DELETE_PRODUCT_URL = "https://codealpha-jewellery-backend.onrender.com/api/products/deleteproducts"; 
-const UPDATE_PRODUCT_URL = "https://codealpha-jewellery-backend.onrender.com/api/products/updateproducts"; 
+const baseUrl="http://localhost:8000"
+const GET_ALL_PRODUCTS_URL = `${baseUrl}/api/products/getallproducts`; 
+const ADD_PRODUCT_URL = `${baseUrl}/api/products/newproduct`; 
+const DELETE_PRODUCT_URL = `${baseUrl}/api/products/deleteproducts`; 
+const UPDATE_PRODUCT_URL = `${baseUrl}/api/products/updateproducts`;
+
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -211,7 +213,7 @@ const Products = () => {
                     <td>
                       {product.image ? (
                         <img 
-                          src={product.image} 
+                          src={`${baseUrl}${product.image}`} 
                           alt={product.name} 
                           style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "4px" }} 
                         />

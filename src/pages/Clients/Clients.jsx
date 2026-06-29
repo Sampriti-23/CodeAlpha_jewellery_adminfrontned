@@ -4,8 +4,8 @@ import Sidebar from "../../layout/Sidebar";
 import { FaSearch } from "react-icons/fa";
 
 // 🔥 EXACT URLS MATCHING YOUR BACKEND ROUTES
-const GET_ALL_USERS_URL = "https://codealpha-jewellery-backend.onrender.com/api/user/getalluser"; 
-const GET_ALL_ORDERS_URL = "https://codealpha-jewellery-backend.onrender.com/api/order/getallorder"; // We now get addresses from orders!
+const GET_ALL_USERS_URL = "http://localhost:8000/api/user/getalluser"; 
+const GET_ALL_ORDERS_URL = "http://localhost:8000/api/order/getallorder"; // We now get addresses from orders!
 
 const Clients = () => {
   const [clients, setClients] = useState([]);

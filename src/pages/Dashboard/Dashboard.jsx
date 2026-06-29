@@ -3,9 +3,9 @@ import "./Dashboard.css";
 import Sidebar from "../../layout/Sidebar";
 
 // 🔥 UPDATE THESE TO MATCH YOUR ACTUAL BACKEND ROUTES
-const GET_ALL_PRODUCTS_URL = "https://codealpha-jewellery-backend.onrender.com/api/products/getallproducts";
-const GET_ALL_USERS_URL = "https://codealpha-jewellery-backend.onrender.com/api/user/getalluser";
-const GET_ALL_ORDERS_URL = "https://codealpha-jewellery-backend.onrender.com/api/orders/getallorders"; // Assuming you have this route
+const GET_ALL_PRODUCTS_URL = "http://localhost:8000/api/products/getallproducts";
+const GET_ALL_USERS_URL = "http://localhost:8000/api/user/getalluser";
+const GET_ALL_ORDERS_URL = "http://localhost:8000/api/orders/getallorders"; // Assuming you have this route
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
