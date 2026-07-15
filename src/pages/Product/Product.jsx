@@ -230,7 +230,7 @@ const Products = () => {
                         <span style={{fontSize: "11px", color: "#888"}}>
                           {product.description ? product.description.slice(0, 30) : "No description"}...
                         </span>
-                      </div>
+                      </div> 
                     </td>
                     <td>{product.category}</td>
                     <td className="bold-text">₹{product.price}</td>
