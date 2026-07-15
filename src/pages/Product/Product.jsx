@@ -10,7 +10,6 @@ const ADD_PRODUCT_URL = `${baseUrl}/api/products/newproduct`;
 const DELETE_PRODUCT_URL = `${baseUrl}/api/products/deleteproducts`; 
 const UPDATE_PRODUCT_URL = `${baseUrl}/api/products/updateproducts`;
 
-
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -213,7 +212,7 @@ const Products = () => {
                     <td>
                       {product.image ? (
                         <img 
-                          src={`${baseUrl}${product.image}`} 
+                          src={`${product?.image}`} 
                           alt={product.name} 
                           style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "4px" }} 
                         />
