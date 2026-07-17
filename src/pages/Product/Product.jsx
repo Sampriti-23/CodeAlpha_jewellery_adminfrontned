@@ -26,11 +26,20 @@ const Products = () => {
     description: "",
     category: "", 
     price: "",
+    salePrice: "",
     countInStock: "",
   });
 
-  // 🔥 NEW: State specifically to hold the uploaded image file
+  // State specifically to hold the uploaded image file
   const [imageFile, setImageFile] = useState(null);
+
+  // 🔥 NEW: Helper function to safely read both Cloudinary and local image formats
+  const getDisplayImage = (imagePath) => {
+    if (!imagePath) return null;
+    return imagePath.startsWith('http') 
+      ? imagePath 
+      : `${baseUrl}${imagePath}`;
+  };
 
   // 1. GET ALL PRODUCTS FROM DB
   const fetchProducts = async () => {
@@ -61,6 +70,7 @@ const Products = () => {
       description: product.description,
       category: product.category,
       price: product.price,
+      salePrice: product.salePrice || "",
       countInStock: product.countInStock,
     });
     setImageFile(null); // Clear the file input when opening edit mode
@@ -71,75 +81,79 @@ const Products = () => {
   const handleAddNewClick = () => {
     setIsEditMode(false);
     setCurrentEditId(null);
-    setFormData({ name: "", description: "", category: "", price: "", countInStock: "" });
+    setFormData({ name: "", description: "", category: "", price: "", salePrice: "", countInStock: "" });
     setImageFile(null); // Clear the file input for new products
     setIsModalOpen(true);
   };
 
-  // 2. ADD OR UPDATE PRODUCT IN DB (🔥 UPDATED FOR MULTER)
+  // 2. ADD OR UPDATE PRODUCT IN DB (UPDATED FOR MULTER)
   const handleSubmitForm = async (e) => {
-  e.preventDefault();
-  
-  const submitData = new FormData();
-  submitData.append("name", formData.name);
-  submitData.append("description", formData.description);
-  submitData.append("category", formData.category);
-  submitData.append("price", Number(formData.price));
-  submitData.append("countInStock", Number(formData.countInStock));
+    e.preventDefault();
+    
+    const submitData = new FormData();
+    submitData.append("name", formData.name);
+    submitData.append("description", formData.description);
+    submitData.append("category", formData.category);
+    submitData.append("price", Number(formData.price));
+    
+    // Send string "null" if blank so the backend explicitly knows to clear it out
+    submitData.append("salePrice", formData.salePrice ? Number(formData.salePrice) : "null");
+    submitData.append("countInStock", Number(formData.countInStock));
 
-  if (imageFile) {
-    submitData.append("image", imageFile);
-  }
-
-  // ✅ FIXED CRITICAL CHECK: Force edit validation logic by checking if a valid ID exists!
-  const isUpdatingProduct = isEditMode && currentEditId && currentEditId !== "null" && currentEditId !== "undefined";
-
-  if (isUpdatingProduct) {
-    try {
-      console.log("Sending PUT request to ID:", currentEditId);
-      
-      const response = await fetch(`${UPDATE_PRODUCT_URL}/${currentEditId}`, {
-        method: "PUT",
-        body: submitData,
-      });
-
-      if (!response.ok) throw new Error("Failed to update product");
-      const updatedProduct = await response.json();
-      
-      const updatedProductsList = products.map((p) => 
-        p._id === currentEditId ? updatedProduct : p
-      );
-      setProducts(updatedProductsList);
-      
-    } catch (error) {
-      console.error("Error updating product:", error);
-      alert("Failed to update product.");
+    if (imageFile) {
+      submitData.append("image", imageFile);
     }
-  } else {
-    try {
-      console.log("Sending POST request to create a brand new product.");
-      
-      const response = await fetch(ADD_PRODUCT_URL, {
-        method: "POST",
-        body: submitData,
-      });
 
-      if (!response.ok) throw new Error("Failed to create product");
-      const savedProduct = await response.json();
-      setProducts([savedProduct, ...products]);
-    } catch (error) {
-      console.error("Error adding product:", error);
-      alert("Failed to add product.");
+    // FIXED CRITICAL CHECK: Force edit validation logic by checking if a valid ID exists!
+    const isUpdatingProduct = isEditMode && currentEditId && currentEditId !== "null" && currentEditId !== "undefined";
+
+    if (isUpdatingProduct) {
+      try {
+        console.log("Sending PUT request to ID:", currentEditId);
+        
+        const response = await fetch(`${UPDATE_PRODUCT_URL}/${currentEditId}`, {
+          method: "PUT",
+          body: submitData,
+        });
+
+        if (!response.ok) throw new Error("Failed to update product");
+        const updatedProduct = await response.json();
+        
+        const updatedProductsList = products.map((p) => 
+          p._id === currentEditId ? updatedProduct : p
+        );
+        setProducts(updatedProductsList);
+        
+      } catch (error) {
+        console.error("Error updating product:", error);
+        alert("Failed to update product.");
+      }
+    } else {
+      try {
+        console.log("Sending POST request to create a brand new product.");
+        
+        const response = await fetch(ADD_PRODUCT_URL, {
+          method: "POST",
+          body: submitData,
+        });
+
+        if (!response.ok) throw new Error("Failed to create product");
+        const savedProduct = await response.json();
+        setProducts([savedProduct, ...products]);
+      } catch (error) {
+        console.error("Error adding product:", error);
+        alert("Failed to add product.");
+      }
     }
-  }
 
-  // Reset states
-  setIsModalOpen(false); 
-  setIsEditMode(false);
-  setCurrentEditId(null);
-  setImageFile(null);
-  setFormData({ name: "", description: "", category: "", price: "", countInStock: "" }); 
-};
+    // Reset states
+    setIsModalOpen(false); 
+    setIsEditMode(false);
+    setCurrentEditId(null);
+    setImageFile(null);
+    setFormData({ name: "", description: "", category: "", price: "", salePrice: "", countInStock: "" }); 
+  };
+
   // 3. DELETE PRODUCT
   const handleDeleteProduct = async (productId) => {
     try {
@@ -193,12 +207,12 @@ const Products = () => {
           <table className="data-table">
             <thead>
               <tr>
-                {/* 🔥 Added an Image column header */}
                 <th>Image</th>
                 <th>Product ID</th>
                 <th>Product Name</th>
                 <th>Category</th>
                 <th>Price</th>
+                <th>Sale Price</th>
                 <th>Quantity</th>
                 <th className="action-col"></th>
               </tr>
@@ -208,11 +222,11 @@ const Products = () => {
                 filteredProducts.map((product) => (
                   <tr key={product._id}>
                     
-                    {/* 🔥 Image Cell */}
+                    {/* Image Cell - Modified to use custom display helper */}
                     <td>
                       {product.image ? (
                         <img 
-                          src={`${product?.image}`} 
+                          src={getDisplayImage(product.image)} 
                           alt={product.name} 
                           style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "4px" }} 
                         />
@@ -235,6 +249,11 @@ const Products = () => {
                     <td>{product.category}</td>
                     <td className="bold-text">₹{product.price}</td>
                     
+                    {/* 🔥 FIXED: Added the missing data cell for Sale Price so column alignments stay uniform */}
+                    <td className="bold-text" style={{ color: "#d9534f" }}>
+                      {product.salePrice && product.salePrice > 0 ? `₹${product.salePrice}` : "-"}
+                    </td>
+
                     <td>
                       <span className={`qty-indicator ${product.countInStock < 10 ? 'low-stock' : ''}`}>
                          {product.countInStock} units
@@ -265,7 +284,7 @@ const Products = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="no-data">No products found.</td>
+                  <td colSpan="8" className="no-data">No products found.</td>
                 </tr>
               )}
             </tbody>
@@ -280,7 +299,7 @@ const Products = () => {
             
             <form onSubmit={handleSubmitForm}>
               
-              {/* 🔥 NEW: Image File Upload Input */}
+              {/* Image File Upload Input */}
               <div className="form-group" style={{ marginBottom: "15px" }}>
                 <label>Product Image</label>
                 <input 
@@ -308,8 +327,8 @@ const Products = () => {
                   name="category" 
                   required 
                   value={formData.category} 
-                  onChange={handleInputChange}
-                >
+                  onChange={handleInputChange}>
+
                   <option value="" disabled>Select a category</option>
                   <option value="Ring">Ring</option>
                   <option value="Necklace">Necklace</option>
@@ -321,8 +340,26 @@ const Products = () => {
               </div>
 
               <div className="form-group">
-                <label>Price (₹)</label>
-                <input type="number" name="price" required placeholder="e.g. 1500" value={formData.price} onChange={handleInputChange} />
+                <label>Regular Price (₹)</label>
+                <input 
+                  type="number"
+                  name="price"
+                  required
+                  placeholder="e.g. 1500" 
+                  value={formData.price} 
+                  onChange={handleInputChange} 
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Sale Price (₹)</label>
+                <input 
+                  type="number"
+                  name="salePrice"
+                  placeholder="Leave blank if no discount" 
+                  value={formData.salePrice} 
+                  onChange={handleInputChange} 
+                />
               </div>
               
               <div className="form-group">
