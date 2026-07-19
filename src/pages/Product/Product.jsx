@@ -322,7 +322,7 @@ const Products = () => {
                   <option value="Necklace">Necklace</option>
                   <option value="Earrings">Earrings</option>
                   <option value="Bracelet">Bracelet</option>
-                  <option value="Pendant">Combo pack</option>
+                  <option value="Combo pack">Combo pack</option>
                 </select>
               </div>
 
