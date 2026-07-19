@@ -1,6 +1,6 @@
 .login-container {
   display: flex;
-  height: 97vh;
+  min-height: 100vh; /* Changed from 97vh to ensure full screen coverage */
   font-family: "Poppins", sans-serif;
 }
 
@@ -14,6 +14,13 @@
   background: #ffffff;
 }
 
+/* Wrapper to help center the form on mobile */
+.form-wrapper {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto; /* Centers the block if the screen gets wider */
+}
+
 .logo {
   font-size: 22px;
   font-weight: bold;
@@ -23,56 +30,62 @@
 
 .login-left h2 {
   margin-bottom: 5px;
+  color: #333;
 }
 
 .subtitle {
   color: #777;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
-/* FORM 
+/* FORM */
 .form {
-  max-width: 350px;
-}*/
-
-
+  width: 100%;
+}
 
 .form label {
   font-size: 13px;
   color: #666;
+  font-weight: 500;
 }
 
 .form input {
   width: 100%;
   padding: 12px;
-  margin: 6px 0 12px;
+  margin: 6px 0 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
   outline: none;
+  box-sizing: border-box; /* Crucial: stops inputs from overflowing */
+  font-family: inherit;
 }
 
 .form input:focus {
-  border-color: #4f6f52;
+  border-color: #4f6f52; /* You might want to change this to #a81a4c to match your button theme */
 }
 
 /* ERROR */
 .error {
   color: red;
   font-size: 12px;
-  margin-bottom: 10px;
+  margin-top: -10px;
+  margin-bottom: 15px;
 }
 
 /* BUTTON */
 button {
   width: 100%;
   padding: 12px;
-  background:  #a81a4c;
+  background: #a81a4c;
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   margin-top: 10px;
   transition: 0.3s;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
 }
 
 button:hover {
@@ -84,16 +97,59 @@ button:hover {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  margin-top: 40px;
+  margin-top: 50px;
   color: #999;
 }
 
 /* RIGHT SIDE */
 .login-right {
   width: 50%;
-  background: url("https://images.unsplash.com/photo-1717282924908-1c0262e4b136");
-  background-size: cover;
+  background: url("https://images.unsplash.com/photo-1717282924908-1c0262e4b136") center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* ========================================= */
+/* RESPONSIVE MEDIA QUERIES                  */
+/* ========================================= */
+
+/* Tablet View */
+@media (max-width: 1024px) {
+  .login-left {
+    padding: 40px;
+  }
+}
+
+/* Mobile View (Phones and small tablets) */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .login-right {
+    display: none; /* Hides the decorative image on small screens */
+  }
+
+  .login-left {
+    width: 100%;
+    padding: 30px 20px;
+    align-items: center;
+  }
+
+  .form-wrapper {
+    /* Slightly less max-width on mobile to give it breathing room */
+    max-width: 100%; 
+  }
+
+  .logo {
+    margin-bottom: 30px;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 40px;
+  }
 }

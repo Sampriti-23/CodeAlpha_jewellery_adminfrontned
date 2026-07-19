@@ -4,10 +4,9 @@ import Sidebar from "../../layout/Sidebar";
 import { FaSearch, FaEllipsisH } from "react-icons/fa";
 
 // 🔥 UPDATE THESE TO MATCH YOUR ACTUAL BACKEND ROUTES
-// 🔥 FIX: Added the missing "s" to match your backend routes perfectly!
-const baseurl="https://codealpha-jewellery-backend.onrender.com";
+const baseurl = "https://codealpha-jewellery-backend.onrender.com";
 const GET_ALL_ORDERS_URL = `${baseurl}/api/orders/getallorders`; 
-const UPDATE_ORDER_URL = `${baseurl}/api/orders/updateorders`; // Used for status changes
+const UPDATE_ORDER_URL = `${baseurl}/api/orders/updateorders`; 
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -62,8 +61,6 @@ const Orders = () => {
       });
 
       if (!response.ok) throw new Error("Failed to update status");
-
-      const updatedOrder = await response.json();
 
       // Update the local UI state so the change is instant
       const updatedOrdersList = orders.map((order) =>
@@ -137,11 +134,9 @@ const Orders = () => {
               ) : filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
                   <tr key={order._id}>
-                    {/* Using last 6 characters of Mongo ID for cleaner display */}
                     <td className="bold-text text-muted">#{order._id.slice(-6).toUpperCase()}</td>
                     <td className="bold-text">{order.clientName}</td>
                     
-                    {/* Map through the items array since a cart can have multiple products */}
                     <td>
                       {order.orderItems && order.orderItems.map((item, index) => (
                         <div key={index} style={{ fontSize: "13px", marginBottom: "2px" }}>

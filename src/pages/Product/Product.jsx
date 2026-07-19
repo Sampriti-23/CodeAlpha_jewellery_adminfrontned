@@ -4,7 +4,7 @@ import Sidebar from "../../layout/Sidebar";
 import { FaSearch, FaPlus, FaEllipsisH, FaTrash, FaEdit, FaImage } from "react-icons/fa";
 
 // 🔥 EXACT URLS MATCHING YOUR BACKEND ROUTES
-const baseUrl="https://codealpha-jewellery-backend.onrender.com"
+const baseUrl = "https://codealpha-jewellery-backend.onrender.com";
 const GET_ALL_PRODUCTS_URL = `${baseUrl}/api/products/getallproducts`; 
 const ADD_PRODUCT_URL = `${baseUrl}/api/products/newproduct`; 
 const DELETE_PRODUCT_URL = `${baseUrl}/api/products/deleteproducts`; 
@@ -33,7 +33,7 @@ const Products = () => {
   // State specifically to hold the uploaded image file
   const [imageFile, setImageFile] = useState(null);
 
-  // 🔥 NEW: Helper function to safely read both Cloudinary and local image formats
+  // Helper function to safely read both Cloudinary and local image formats
   const getDisplayImage = (imagePath) => {
     if (!imagePath) return null;
     return imagePath.startsWith('http') 
@@ -73,7 +73,7 @@ const Products = () => {
       salePrice: product.salePrice || "",
       countInStock: product.countInStock,
     });
-    setImageFile(null); // Clear the file input when opening edit mode
+    setImageFile(null); 
     setIsModalOpen(true);
     setActiveMenuId(null); 
   };
@@ -82,11 +82,11 @@ const Products = () => {
     setIsEditMode(false);
     setCurrentEditId(null);
     setFormData({ name: "", description: "", category: "", price: "", salePrice: "", countInStock: "" });
-    setImageFile(null); // Clear the file input for new products
+    setImageFile(null); 
     setIsModalOpen(true);
   };
 
-  // 2. ADD OR UPDATE PRODUCT IN DB (UPDATED FOR MULTER)
+  // 2. ADD OR UPDATE PRODUCT IN DB 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     
@@ -96,7 +96,6 @@ const Products = () => {
     submitData.append("category", formData.category);
     submitData.append("price", Number(formData.price));
     
-    // Send string "null" if blank so the backend explicitly knows to clear it out
     submitData.append("salePrice", formData.salePrice ? Number(formData.salePrice) : "null");
     submitData.append("countInStock", Number(formData.countInStock));
 
@@ -104,13 +103,10 @@ const Products = () => {
       submitData.append("image", imageFile);
     }
 
-    // FIXED CRITICAL CHECK: Force edit validation logic by checking if a valid ID exists!
     const isUpdatingProduct = isEditMode && currentEditId && currentEditId !== "null" && currentEditId !== "undefined";
 
     if (isUpdatingProduct) {
       try {
-        console.log("Sending PUT request to ID:", currentEditId);
-        
         const response = await fetch(`${UPDATE_PRODUCT_URL}/${currentEditId}`, {
           method: "PUT",
           body: submitData,
@@ -130,8 +126,6 @@ const Products = () => {
       }
     } else {
       try {
-        console.log("Sending POST request to create a brand new product.");
-        
         const response = await fetch(ADD_PRODUCT_URL, {
           method: "POST",
           body: submitData,
@@ -221,8 +215,6 @@ const Products = () => {
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <tr key={product._id}>
-                    
-                    {/* Image Cell - Modified to use custom display helper */}
                     <td>
                       {product.image ? (
                         <img 
@@ -249,7 +241,6 @@ const Products = () => {
                     <td>{product.category}</td>
                     <td className="bold-text">₹{product.price}</td>
                     
-                    {/* 🔥 FIXED: Added the missing data cell for Sale Price so column alignments stay uniform */}
                     <td className="bold-text" style={{ color: "#d9534f" }}>
                       {product.salePrice && product.salePrice > 0 ? `₹${product.salePrice}` : "-"}
                     </td>
@@ -298,8 +289,6 @@ const Products = () => {
             <h3>{isEditMode ? "Edit Product" : "Add New Product"}</h3>
             
             <form onSubmit={handleSubmitForm}>
-              
-              {/* Image File Upload Input */}
               <div className="form-group" style={{ marginBottom: "15px" }}>
                 <label>Product Image</label>
                 <input 
@@ -328,14 +317,12 @@ const Products = () => {
                   required 
                   value={formData.category} 
                   onChange={handleInputChange}>
-
                   <option value="" disabled>Select a category</option>
                   <option value="Ring">Ring</option>
                   <option value="Necklace">Necklace</option>
                   <option value="Earrings">Earrings</option>
                   <option value="Bracelet">Bracelet</option>
-                  <option value="Pendant">Pendant</option>
-                  <option value="Other">Other</option>
+                  <option value="Pendant">Combo pack</option>
                 </select>
               </div>
 

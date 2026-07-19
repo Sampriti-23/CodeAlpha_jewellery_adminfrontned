@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import "./Clients.css";
 import Sidebar from "../../layout/Sidebar";
 import { FaSearch } from "react-icons/fa";
-const baseurl ="https://codealpha-jewellery-backend.onrender.com";
+
+const baseurl = "https://codealpha-jewellery-backend.onrender.com";
 // 🔥 EXACT URLS MATCHING YOUR BACKEND ROUTES
 const GET_ALL_USERS_URL = `${baseurl}/api/user/getalluser`; 
-const GET_ALL_ORDERS_URL = `${baseurl}/api/order/getallorder`; // We now get addresses from orders!
+const GET_ALL_ORDERS_URL = `${baseurl}/api/order/getallorder`; 
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
@@ -25,7 +26,7 @@ const Clients = () => {
         // Fetch Users and Orders at the same time
         const [usersRes, ordersRes] = await Promise.all([
             fetch(GET_ALL_USERS_URL, { headers }),
-            fetch(GET_ALL_ORDERS_URL, { headers }).catch(() => null) // Catch if orders route fails
+            fetch(GET_ALL_ORDERS_URL, { headers }).catch(() => null) 
         ]);
         
         if (!usersRes.ok) {
@@ -45,10 +46,7 @@ const Clients = () => {
         const normalClients = usersData.filter(user => user.isAdmin === false || user.isAdmin === undefined);
 
         // --- MERGE DATA ---
-        // Match the user to their most recent order to get their shipping address
         const mergedClients = normalClients.map(user => {
-          // find() gets the first match. Since your getallorder route sorts by newest first, 
-          // this automatically grabs their most recent shipping address!
           const userLatestOrder = ordersData.find(order => String(order.user) === String(user._id));
           
           let phone = "Not Provided";

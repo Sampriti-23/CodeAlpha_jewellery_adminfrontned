@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
 import Sidebar from "../../layout/Sidebar";
-const baseurl ="https://codealpha-jewellery-backend.onrender.com";
+const baseurl = "https://codealpha-jewellery-backend.onrender.com";
+
 // 🔥 UPDATE THESE TO MATCH YOUR ACTUAL BACKEND ROUTES
 const GET_ALL_PRODUCTS_URL = `${baseurl}/api/products/getallproducts`;
 const GET_ALL_USERS_URL = `${baseurl}/api/user/getalluser`;
-const GET_ALL_ORDERS_URL = `${baseurl}/api/orders/getallorders`; // Assuming you have this route
+const GET_ALL_ORDERS_URL = `${baseurl}/api/orders/getallorders`; 
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -32,9 +33,9 @@ const Dashboard = () => {
 
         // Fetch all data concurrently for better performance
         const [productsRes, usersRes, ordersRes] = await Promise.all([
-          fetch(GET_ALL_PRODUCTS_URL), // Usually public
-          fetch(GET_ALL_USERS_URL, { headers }), // Usually protected
-          fetch(GET_ALL_ORDERS_URL, { headers }).catch(() => null), // Catch if orders route doesn't exist yet
+          fetch(GET_ALL_PRODUCTS_URL), 
+          fetch(GET_ALL_USERS_URL, { headers }), 
+          fetch(GET_ALL_ORDERS_URL, { headers }).catch(() => null), 
         ]);
 
         if (!productsRes.ok) throw new Error("Failed to fetch products");
@@ -78,7 +79,7 @@ const Dashboard = () => {
           else if (status === "processing" || status === "confirmed") processingCount++;
           else if (status === "delivered") deliveredCount++;
 
-          // Financials (Assuming delivered/processing is received, pending is due)
+          // Financials
           const price = Number(order.totalPrice) || 0;
           if (status === "delivered" || status === "processing" || status === "confirmed") {
             totalReceived += price;
@@ -86,7 +87,7 @@ const Dashboard = () => {
             totalDue += price;
           }
 
-          // Top Customers Aggregation (Grouping by clientName)
+          // Top Customers Aggregation 
           const clientName = order.clientName || "Unknown Client";
           if (status !== "cancelled") {
             if (!customerSpending[clientName]) {

@@ -10,6 +10,9 @@
   padding: 30px;
   display: flex;
   flex-direction: column;
+  /* Ensures content doesn't overflow horizontally when sidebar is active */
+  max-width: 100vw; 
+  box-sizing: border-box;
 }
 
 .page-header h2 {
@@ -33,7 +36,9 @@
   background: white;
   padding: 10px 15px;
   border-radius: 8px;
-  width: 400px; 
+  /* Changed from fixed width to flexible width */
+  width: 100%; 
+  max-width: 400px; 
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   border: 1px solid #e0e0e0;
 }
@@ -56,12 +61,15 @@
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-  overflow-x: auto;
+  /* Allows horizontal scrolling on small devices */
+  overflow-x: auto; 
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  /* Forces table to scroll horizontally rather than squishing data */
+  min-width: 800px; 
 }
 
 .data-table th {
@@ -71,6 +79,8 @@
   font-weight: 500;
   font-size: 14px;
   border-bottom: 2px solid #eee;
+  /* Prevents header text from wrapping */
+  white-space: nowrap; 
 }
 
 .data-table td {
@@ -113,6 +123,11 @@
 .status-badge.processing {
   background: #e0f2fe;
   color: #0284c7;
+}
+
+.status-badge.shipped {
+  background: #eef2ff;
+  color: #4f46e5;
 }
 
 .status-badge.delivered {
@@ -194,4 +209,65 @@
   text-align: center !important;
   color: #888;
   padding: 30px !important;
+}
+
+
+/* ========================================= */
+/* RESPONSIVE MEDIA QUERIES                  */
+/* ========================================= */
+
+/* Tablet View */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 20px;
+  }
+}
+
+/* Mobile View */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 15px;
+    margin-top: 50px; /* Provides space for the fixed hamburger toggle button */
+  }
+
+  .page-header h2 {
+    font-size: 22px;
+  }
+
+  .search-container {
+    max-width: 100%; /* Search bar takes full width on mobile */
+  }
+
+  .table-container {
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .data-table th, 
+  .data-table td {
+    padding: 12px 10px; /* Tighter padding for smaller screens */
+    font-size: 13px;
+  }
+
+  /* Keep the dropdown menu visible on small screens */
+  .dropdown-menu {
+    right: 40px;
+    z-index: 999;
+  }
+}
+
+/* Small Mobile View */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 10px;
+    margin-top: 60px; 
+  }
+
+  .page-header h2 {
+    font-size: 20px;
+  }
+  
+  .dropdown-menu {
+    right: 30px;
+  }
 }
